@@ -1,0 +1,225 @@
+Metadata-Version: 2.4
+Name: log-analyzer-ai
+Version: 1.0.0
+Summary: AI-powered log file analyzer with executive summaries
+Home-page: https://github.com/pankayad/log-analyzer-ai
+Author: Pankaya D
+Author-email: pankayad@example.com
+Project-URL: Bug Reports, https://github.com/pankayad/log-analyzer-ai/issues
+Project-URL: Source, https://github.com/pankayad/log-analyzer-ai/
+Keywords: log analysis ai ollama monitoring system-administration devops
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: System Administrators
+Classifier: Intended Audience :: DevOps Engineers
+Classifier: Topic :: System :: Logging
+Classifier: Topic :: System :: Monitoring
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.14
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: ollama>=0.1.0
+Provides-Extra: dev
+Requires-Dist: pytest>=6.0; extra == "dev"
+Requires-Dist: black; extra == "dev"
+Requires-Dist: flake8; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Provides-Extra: monitoring
+Requires-Dist: watchdog>=2.0.0; extra == "monitoring"
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: project-url
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# Log Analyzer AI
+
+An intelligent log file analyzer that provides AI-powered executive summaries of system health and performance.
+
+## Features
+
+- 📝 **Log Parsing**: Automatically parses log files with timestamp extraction
+- 🚀 **Event Detection**: Identifies startup and shutdown events  
+- 📊 **Message Counting**: Tracks frequency of critical error patterns
+- 🤖 **AI Summaries**: Generates executive summaries using local LLMs
+- ⚡ **Multiple Interfaces**: CLI, Python API, and configuration presets
+- 🔄 **Continuous Monitoring**: Real-time log monitoring with periodic scans
+- 🛠️ **Extensible**: Easy to customize for different log formats
+
+## Installation
+
+```bash
+# Install the package
+pip install -e .
+
+# Install Ollama for AI summaries
+# macOS:
+brew install ollama
+
+# Start Ollama and pull a model
+ollama serve
+ollama pull llama2
+```
+
+## Quick Start
+
+### Python API
+```python
+from log_analyzer_module import LogAnalyzer
+
+# Create analyzer
+analyzer = LogAnalyzer(
+    directory_path="./logs",
+    startup_msg="started",
+    stop_msg="shutdown",
+    search_list=["ERROR", "WARNING", "CRITICAL"]
+)
+
+# Run analysis
+results = analyzer.run_analysis()
+```
+
+### Command Line Interface
+```bash
+# Basic usage
+log-analyzer --directory ./logs
+
+# With custom patterns
+log-analyzer -d ./logs -s "server started" -t "server stopped" -e ERROR CRITICAL timeout
+
+# Use preset configuration
+log-analyzer --preset web --directory ./logs
+
+# Continuous monitoring
+log-analyzer --continuous --interval 30
+
+# Skip AI summary
+log-analyzer --no-summary
+```
+
+### Using Configuration Presets
+```python
+from log_analyzer_module.config import Configurations
+
+# Web server preset
+config = Configurations.web_server_config()
+
+# Database preset  
+config = Configurations.database_config()
+
+# Application preset
+config = Configurations.application_config()
+
+# System preset
+config = Configurations.system_config()
+```
+
+## Configuration
+
+The module supports various configuration options:
+
+- **log_directory**: Path to log files
+- **startup_message**: Pattern for startup events
+- **shutdown_message**: Pattern for shutdown events  
+- **search_patterns**: List of terms to count
+- **llm_model**: AI model to use for summaries
+- **monitor_interval**: Seconds between scans for continuous monitoring
+
+## Supported Log Format
+
+The analyzer expects log files with timestamps in DD-MM-YYYY HH:MM:SS format:
+
+```
+25-12-2024 08:00:01 INFO Application server starting up
+25-12-2024 08:00:05 DEBUG Loading configuration from config.yml
+25-12-2024 08:20:45 ERROR Failed to connect to external API service
+```
+
+## Examples
+
+### Basic Usage
+```python
+from log_analyzer_module import LogAnalyzer
+
+analyzer = LogAnalyzer("./logs", "started", "stopped", ["ERROR", "WARNING"])
+results = analyzer.run_analysis()
+```
+
+### Continuous Monitoring
+```python
+from log_analyzer_module import LogAnalyzer
+
+analyzer = LogAnalyzer("./logs", "started", "stopped", ["ERROR"], monitor_interval=30)
+analyzer.run_continuous_monitoring()  # Runs until Ctrl+C
+```
+
+### Using Presets
+```python
+from log_analyzer_module import LogAnalyzer
+from log_analyzer_module.config import Configurations
+
+config = Configurations.web_server_config()
+analyzer = LogAnalyzer(
+    "./logs",
+    config.startup_message,
+    config.shutdown_message,
+    config.search_patterns
+)
+results = analyzer.run_analysis()
+```
+
+## CLI Options
+
+```bash
+usage: log-analyzer [-h] [--directory DIRECTORY] [--startup-msg STARTUP_MSG]
+                   [--stop-msg STOP_MSG] [--search-terms SEARCH_TERMS [SEARCH_TERMS ...]]
+                   [--model MODEL] [--no-summary] [--preset {web,database,application,system}]
+                   [--continuous] [--interval INTERVAL] [--version]
+
+Options:
+  -h, --help            show this help message and exit
+  --directory DIRECTORY, -d DIRECTORY
+                        Directory containing log files (default: current directory)
+  --startup-msg STARTUP_MSG, -s STARTUP_MSG
+                        Pattern to identify startup events (default: "started")
+  --stop-msg STOP_MSG, -t STOP_MSG
+                        Pattern to identify shutdown events (default: "shutdown")
+  --search-terms SEARCH_TERMS [SEARCH_TERMS ...], -e SEARCH_TERMS [SEARCH_TERMS ...]
+                        Terms to search for and count (default: ERROR WARNING CRITICAL)
+  --model MODEL, -m MODEL
+                        LLM model to use for summary (default: llama2)
+  --no-summary          Skip AI summary generation
+  --preset {web,database,application,system}, -p {web,database,application,system}
+                        Use predefined configuration preset
+  --continuous, -c      Run in continuous monitoring mode
+  --interval INTERVAL, -i INTERVAL
+                        Monitoring interval in seconds (default: 60)
+  --version             show program's version number and exit
+```
+
+## Requirements
+
+- Python 3.8+
+- Ollama (for AI summaries)
+- Log files with DD-MM-YYYY HH:MM:SS timestamp format
+
+## License
+
+MIT License
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
