@@ -1,0 +1,10 @@
+ollama>=0.1.0
+
+[dev]
+pytest>=6.0
+black
+flake8
+mypy
+
+[monitoring]
+watchdog>=2.0.0
