@@ -95,7 +95,7 @@ if __name__ == "__main__":
         "ConnectionTimeout",
         "OutOfMemoryError",
         "Database connection failed",
-        "Retry attempt"
+        "Retry attempt",
         "BUFFER OVERFLOW"
     ]
 
