@@ -96,6 +96,7 @@ if __name__ == "__main__":
         "OutOfMemoryError",
         "Database connection failed",
         "Retry attempt"
+        "BUFFER OVERFLOW"
     ]
 
     # 2. Run Analyzer
